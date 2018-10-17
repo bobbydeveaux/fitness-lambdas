@@ -13,14 +13,14 @@ docker run --rm --env-file ~/.aws/docker_credentials -v $PWD:/var/task lambci/la
         "request": {
           "body": {
             "action": "read-only",
-            "data": "eyJ1c2VybmFtZSI6IkxhbWJkYUBFZGdlIiwiY29tbWVudCI6IlRoaXMgaXMgcmVxdWVzdCBib2R5In0=",
+            "data": "eyJoZWlnaHQiOjcxLCJ3YWlzdCI6MzEsIm5lY2siOjE1LCJtYXNzIjo3NSwiYmlhIjoxNCwiaGlwIjowLCJhY3Rpdml0eSI6ImxvdyIsImRlZmljaXQiOiJtZWRpdW0iLCJsaWZlc3R5bGUiOiJsY2hmIiwiY2FsY3MiOnt9fQ==",
             "encoding": "base64",
             "inputTruncated": false
           },
           "clientIp": "2001:0db8:85a3:0:0:8a2e:0370:7334",
-          "querystring": "userid=1&mass=75&bia=14&height=71&neck=15&waist=30&activity=low&lifestyle=lchf&deficit=medium&hip=0",
+          "querystring": "userid=1&mass=65&bia=14&height=70&neck=14&waist=30&activity=low&lifestyle=balanced&deficit=maintain&hip=0",
           "uri": "/picture.jpg",
-          "method": "GET",
+          "method": "POST",
           "headers": {
             "host": [
               {

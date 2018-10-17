@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-
+	"encoding/base64"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bobbydeveaux/fitness-calcs/calcs"
-	"net/url"
-	"strconv"
+	"log"
+	//"net/url"
 )
 
 type MyEvent struct {
@@ -24,6 +24,23 @@ type CFData struct {
 
 type CFRequest struct {
 	QueryString string `json:"querystring"`
+	Body        CFBody `json:"body"`
+}
+
+type CFBody struct {
+	Data string `json:"data"`
+}
+
+func base64Encode(str string) string {
+	return base64.StdEncoding.EncodeToString([]byte(str))
+}
+
+func base64Decode(str string) (string, bool) {
+	data, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return "", true
+	}
+	return string(data), false
 }
 
 func main() {
@@ -32,34 +49,26 @@ func main() {
 
 func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
 
-	bobby := calc.Person{
-		Height:    71,
-		Waist:     31.00,
-		Neck:      15.00,
-		Mass:      75.00,
-		Bia:       14.00,
-		Hip:       0,
-		Activity:  "low",
-		Deficit:   "medium",
-		Lifestyle: "lchf",
-	}
+	var person calc.Person
 
 	for _, v := range name.Records {
-		m, _ := url.ParseQuery(v.Cf.Request.QueryString)
+		//m, _ := url.ParseQuery(v.Cf.Request.QueryString)
+		data, _ := base64Decode(v.Cf.Request.Body.Data)
 
-		bobby.Height, _ = strconv.ParseFloat(m["height"][0], 64)
-		bobby.Waist, _ = strconv.ParseFloat(m["waist"][0], 64)
-		bobby.Neck, _ = strconv.ParseFloat(m["neck"][0], 64)
-		bobby.Mass, _ = strconv.ParseFloat(m["mass"][0], 64)
-		bobby.Bia, _ = strconv.ParseFloat(m["bia"][0], 64)
-		bobby.Hip, _ = strconv.ParseFloat(m["hip"][0], 64)
-		bobby.Activity = m["activity"][0]
-		bobby.Deficit = m["deficit"][0]
-		bobby.Lifestyle = m["lifestyle"][0]
+		log.Println(data)
+		testing := []byte(data)
 
-		calcBobby := calc.CalcAll(bobby)
-		payload, _ := json.Marshal(calcBobby)
+		err := json.Unmarshal(testing, &person)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		person.Calc()
+
+		log.Println(person)
+		payload, _ := json.Marshal(person)
 		strPayload := string(payload[:])
+
 		return strPayload, nil
 	}
 
