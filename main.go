@@ -52,20 +52,15 @@ func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
 	var person calc.Person
 
 	for _, v := range name.Records {
-		//m, _ := url.ParseQuery(v.Cf.Request.QueryString)
 		data, _ := base64Decode(v.Cf.Request.Body.Data)
+		byteData := []byte(data)
 
-		log.Println(data)
-		testing := []byte(data)
-
-		err := json.Unmarshal(testing, &person)
+		err := json.Unmarshal(byteData, &person)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		person.Calc()
-
-		log.Println(person)
 		payload, _ := json.Marshal(person)
 		strPayload := string(payload[:])
 
