@@ -11,24 +11,16 @@ import (
 )
 
 type MyEvent struct {
-	Records []CFRecord `json:"Records"`
-}
-
-type CFRecord struct {
-	Cf CFData `json:"cf"`
-}
-
-type CFData struct {
-	Request CFRequest `json:"request"`
-}
-
-type CFRequest struct {
-	QueryString string `json:"querystring"`
-	Body        CFBody `json:"body"`
-}
-
-type CFBody struct {
-	Data string `json:"data"`
+	Records []struct {
+		Cf struct {
+			Request struct {
+				QueryString string `json:"querystring"`
+				Body        struct {
+					Data string `json:"data"`
+				} `json:"body"`
+			} `json:"request"`
+		} `json:"cf"`
+	} `json:"Records"`
 }
 
 func base64Encode(str string) string {
