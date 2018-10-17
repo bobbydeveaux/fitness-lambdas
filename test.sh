@@ -1,5 +1,5 @@
 #!/bin/bash
-GOOS=linux go build main.go
+GOOS=linux go build main.go && \
 docker run --rm --env-file ~/.aws/docker_credentials -v $PWD:/var/task lambci/lambda:go1.x main '{
   "Records": [
     {
@@ -18,7 +18,7 @@ docker run --rm --env-file ~/.aws/docker_credentials -v $PWD:/var/task lambci/la
             "inputTruncated": false
           },
           "clientIp": "2001:0db8:85a3:0:0:8a2e:0370:7334",
-          "querystring": "userid=1&mass=75&bia=19",
+          "querystring": "userid=1&mass=75&bia=14&height=71&neck=15&waist=30&activity=low&lifestyle=lchf&deficit=medium&hip=0",
           "uri": "/picture.jpg",
           "method": "GET",
           "headers": {

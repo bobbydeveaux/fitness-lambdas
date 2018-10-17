@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bobbydeveaux/fitness-calcs/calcs"
-	"log"
 	"net/url"
 	"strconv"
 )
@@ -46,15 +45,17 @@ func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
 	}
 
 	for _, v := range name.Records {
-		log.Println(v.Cf.Request.QueryString)
 		m, _ := url.ParseQuery(v.Cf.Request.QueryString)
-		log.Println(m)
-		log.Println(m["userid"][0])
-		log.Println(m["mass"][0])
-		log.Println(m["bia"][0])
 
+		bobby.Height, _ = strconv.ParseFloat(m["height"][0], 64)
+		bobby.Waist, _ = strconv.ParseFloat(m["waist"][0], 64)
+		bobby.Neck, _ = strconv.ParseFloat(m["neck"][0], 64)
 		bobby.Mass, _ = strconv.ParseFloat(m["mass"][0], 64)
 		bobby.Bia, _ = strconv.ParseFloat(m["bia"][0], 64)
+		bobby.Hip, _ = strconv.ParseFloat(m["hip"][0], 64)
+		bobby.Activity = m["activity"][0]
+		bobby.Deficit = m["deficit"][0]
+		bobby.Lifestyle = m["lifestyle"][0]
 
 		calcBobby := calc.CalcAll(bobby)
 		payload, _ := json.Marshal(calcBobby)
