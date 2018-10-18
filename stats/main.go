@@ -11,16 +11,7 @@ import (
 )
 
 type MyEvent struct {
-	Records []struct {
-		Cf struct {
-			Request struct {
-				QueryString string `json:"querystring"`
-				Body        struct {
-					Data string `json:"data"`
-				} `json:"body"`
-			} `json:"request"`
-		} `json:"cf"`
-	} `json:"Records"`
+	Body string `json:"body"`
 }
 
 func base64Encode(str string) string {
@@ -43,21 +34,19 @@ func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
 
 	var person calc.Person
 
-	for _, v := range name.Records {
-		data, _ := base64Decode(v.Cf.Request.Body.Data)
-		byteData := []byte(data)
+	data, _ := base64Decode(name.Body)
+	byteData := []byte(data)
 
-		err := json.Unmarshal(byteData, &person)
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		person.Calc()
-		payload, _ := json.Marshal(person)
-		strPayload := string(payload[:])
-
-		return strPayload, nil
+	err := json.Unmarshal(byteData, &person)
+	if err != nil {
+		log.Println(err.Error())
 	}
+
+	person.Calc()
+	payload, _ := json.Marshal(person)
+	strPayload := string(payload[:])
+
+	return strPayload, nil
 
 	return "Success!", nil
 

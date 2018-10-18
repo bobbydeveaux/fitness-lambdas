@@ -1,1 +1,5 @@
+.DS_Store
+.terraform
 main
+stats_lambda.zip
+*.tfstate*
