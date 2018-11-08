@@ -3,7 +3,7 @@
 # Exit if any of the intermediate steps fail
 set -e
 
-export PATH="$PATH:/usr/local/bin/go"
+export PATH="$PATH:/usr/local/bin"
 
-eval "$(jq -r '@sh "PATH=\(.path)"')"
-GOOS=linux go build -o $PATH/main $PATH/main.go 
+eval "$(jq -r '@sh "LAMBDA_PATH=\(.lambda_path)"')"
+GOOS=linux go build -o $LAMBDA_PATH/main $LAMBDA_PATH/main.go && echo "{}"

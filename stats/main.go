@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"encoding/json"
+
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bobbydeveaux/fitness-calcs/calcs"
-	"log"
-	//"net/url"
+
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"html/template"
 )
 
 type MyEvent struct {
-	Body string `json:"body"`
+	QueryStringParameters calc.Person `json:"queryStringParameters"`
 }
 
 func base64Encode(str string) string {
@@ -27,27 +31,50 @@ func base64Decode(str string) (string, bool) {
 }
 
 func main() {
+
 	lambda.Start(HandleRequest)
+
 }
 
-func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
+func HandleRequest(ctx context.Context, event MyEvent) (events.APIGatewayProxyResponse, error) {
 
-	var person calc.Person
+	test := fmt.Sprintf("%v", event)
 
-	data, _ := base64Decode(name.Body)
-	byteData := []byte(data)
-
-	err := json.Unmarshal(byteData, &person)
-	if err != nil {
-		log.Println(err.Error())
-	}
+	person := event.QueryStringParameters
+	person.Debug = test
 
 	person.Calc()
-	payload, _ := json.Marshal(person)
-	strPayload := string(payload[:])
 
-	return strPayload, nil
+	response := events.APIGatewayProxyResponse{}
+	sPerson, _ := json.Marshal(person)
+	response.Body = string(sPerson)
+	if person.Format == "html" {
+		response.Body = getHtmlBody(person)
+	}
 
-	return "Success!", nil
+	response.StatusCode = 200
+	response.Headers = map[string]string{
+		"Access-Control-Allow-Origin": "*",
+	}
 
+	return response, nil
+
+}
+
+func getHtmlBody(p calc.Person) string {
+
+	var err error
+	tmpl, err := template.ParseFiles("html/output.html")
+	if err != nil {
+		return "Error loading template"
+	}
+
+	var tpl bytes.Buffer
+	if err := tmpl.Execute(&tpl, p); err != nil {
+		return err.Error()
+	}
+
+	result := tpl.String()
+
+	return result
 }
